@@ -13,6 +13,7 @@ interface Props {
   settings: ProcessSettings
   kind: MediaKind | null
   hasAlpha?: boolean
+  className?: string
   onChange: (patch: Partial<ProcessSettings>) => void
   exportQuality: ExportQuality
   onExportQualityChange: (q: ExportQuality) => void
@@ -100,6 +101,7 @@ export function Controls({
   settings,
   kind,
   hasAlpha = false,
+  className = '',
   onChange,
   exportQuality,
   onExportQualityChange,
@@ -129,7 +131,13 @@ export function Controls({
   const hasMoreAlgorithms = algorithms.some((id) => !ALGORITHM_META[id].primary)
 
   return (
-    <aside className="flex h-full flex-col gap-5 overflow-y-auto border-l border-line bg-panel p-5">
+    <aside
+      className={[
+        'flex h-full flex-col gap-4 overflow-y-auto border-line bg-panel p-4 sm:gap-5 sm:p-5 lg:border-l',
+        'pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-5',
+        className,
+      ].join(' ')}
+    >
       <div>
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">
           Output
@@ -146,8 +154,8 @@ export function Controls({
               onChange(patch)
             }}
             options={[
-              { id: 'pixel', label: 'Pixel dither' },
-              { id: 'ascii', label: 'ASCII + dither' },
+              { id: 'pixel', label: 'Pixel' },
+              { id: 'ascii', label: 'ASCII' },
             ]}
           />
         </div>
@@ -210,7 +218,7 @@ export function Controls({
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">
           Palette
         </h2>
-        <div className="mt-2 grid grid-cols-2 gap-1.5">
+        <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-2">
           {PALETTE_IDS.map((id) => {
             const meta = PALETTE_META[id]
             const selected = settings.palette === id
@@ -424,7 +432,7 @@ export function Controls({
           type="button"
           disabled={!kind || exporting || bgRemoving}
           onClick={onExport}
-          className="w-full rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-ink transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+          className="hidden w-full rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-ink transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 lg:block"
         >
           {exporting
             ? exportProgress != null

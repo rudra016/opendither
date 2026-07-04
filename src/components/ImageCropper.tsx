@@ -198,30 +198,35 @@ export function ImageCropper({
   const handles: Handle[] = ['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w']
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-ink/95 backdrop-blur-sm">
-      <header className="flex items-center gap-3 border-b border-line px-5 py-3">
-        <div>
-          <h2 className="text-sm font-semibold text-paper">Crop image</h2>
-          <p className="font-mono text-[11px] text-muted">
-            {name} · {imageWidth}×{imageHeight}
-          </p>
-        </div>
-        <div className="ml-auto flex flex-wrap items-center gap-1">
-          {ASPECTS.map((a) => (
-            <button
-              key={a.id}
-              type="button"
-              onClick={() => setPresetAndCrop(a.id)}
-              className={[
-                'rounded-md px-2.5 py-1 text-xs font-medium transition',
-                preset === a.id
-                  ? 'bg-paper text-ink'
-                  : 'text-muted hover:bg-panel-2 hover:text-paper',
-              ].join(' ')}
-            >
-              {a.label}
-            </button>
-          ))}
+    <div
+      className="fixed inset-0 z-50 flex flex-col bg-ink/95 backdrop-blur-sm"
+      style={{ paddingTop: 'env(safe-area-inset-top)' }}
+    >
+      <header className="shrink-0 border-b border-line px-3 py-2.5 sm:px-5 sm:py-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <div className="min-w-0">
+            <h2 className="text-sm font-semibold text-paper">Crop image</h2>
+            <p className="truncate font-mono text-[11px] text-muted">
+              {name} · {imageWidth}×{imageHeight}
+            </p>
+          </div>
+          <div className="-mx-1 flex items-center gap-1 overflow-x-auto px-1 sm:ml-auto sm:flex-wrap sm:overflow-visible">
+            {ASPECTS.map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                onClick={() => setPresetAndCrop(a.id)}
+                className={[
+                  'shrink-0 rounded-md px-2.5 py-1 text-xs font-medium transition',
+                  preset === a.id
+                    ? 'bg-paper text-ink'
+                    : 'text-muted hover:bg-panel-2 hover:text-paper',
+                ].join(' ')}
+              >
+                {a.label}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
@@ -290,31 +295,34 @@ export function ImageCropper({
         )}
       </div>
 
-      <footer className="flex items-center justify-between gap-3 border-t border-line px-5 py-3">
+      <footer
+        className="shrink-0 flex flex-col gap-3 border-t border-line px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+      >
         <p className="font-mono text-xs text-muted">
           {Math.round(crop.width)}×{Math.round(crop.height)}
         </p>
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-md border border-line px-3 py-2 text-sm text-muted hover:border-muted hover:text-paper"
+            className="rounded-md border border-line px-2 py-2 text-xs text-muted hover:border-muted hover:text-paper sm:px-3 sm:text-sm"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={onSkip}
-            className="rounded-md border border-line px-3 py-2 text-sm text-paper hover:border-muted"
+            className="rounded-md border border-line px-2 py-2 text-xs text-paper hover:border-muted sm:px-3 sm:text-sm"
           >
-            Use full image
+            Full
           </button>
           <button
             type="button"
             onClick={() => onApply(crop)}
-            className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-ink hover:brightness-110"
+            className="rounded-md bg-accent px-2 py-2 text-xs font-semibold text-ink hover:brightness-110 sm:px-4 sm:text-sm"
           >
-            Apply crop
+            Apply
           </button>
         </div>
       </footer>

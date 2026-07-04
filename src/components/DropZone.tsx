@@ -25,9 +25,12 @@ export function DropZone({ onFile, compact }: Props) {
 
   if (compact) {
     return (
-      <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-line bg-panel-2 px-3 py-1.5 text-sm text-paper transition hover:border-muted">
+      <label
+        aria-label="Replace file"
+        className="inline-flex cursor-pointer items-center rounded-md border border-line bg-panel-2 p-2 text-paper transition hover:border-muted sm:gap-2 sm:px-3 sm:py-1.5"
+      >
         <Upload size={14} />
-        Replace
+        <span className="hidden sm:inline">Replace</span>
         <input
           type="file"
           accept="image/*,video/*"
@@ -47,7 +50,7 @@ export function DropZone({ onFile, compact }: Props) {
       onDragLeave={() => setOver(false)}
       onDrop={onDrop}
       className={[
-        'flex h-full min-h-[420px] cursor-pointer flex-col items-center justify-center gap-5 rounded-xl border border-dashed px-8 text-center transition',
+        'flex h-full min-h-[min(55dvh,360px)] cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border border-dashed px-4 py-8 text-center transition sm:min-h-[420px] sm:gap-5 sm:px-8',
         over
           ? 'border-accent bg-accent/5'
           : 'border-line bg-panel hover:border-muted',
@@ -58,10 +61,10 @@ export function DropZone({ onFile, compact }: Props) {
         <Video size={28} strokeWidth={1.5} />
       </div>
       <div>
-        <p className="text-lg font-medium text-paper">
+        <p className="text-base font-medium text-paper sm:text-lg">
           Drop an image or video to dither
         </p>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-1 text-xs text-muted sm:text-sm">
           Free in-browser dithering · PNG, JPG, WebP, GIF · MP4, WebM, MOV
         </p>
       </div>

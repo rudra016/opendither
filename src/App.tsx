@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Controls } from './components/Controls'
 import { DropZone } from './components/DropZone'
 import { ImageCropper } from './components/ImageCropper'
+import { MobileBottomBar, type MobileTab } from './components/MobileBottomBar'
 import { Preview } from './components/Preview'
 import { useMediaSource } from './hooks/useMediaSource'
 import {
@@ -63,6 +64,7 @@ export default function App() {
   const [bgRemoveProgress, setBgRemoveProgress] =
     useState<BgRemovalProgress | null>(null)
   const [toast, setToast] = useState<string | null>(null)
+  const [mobileTab, setMobileTab] = useState<MobileTab>('preview')
 
   const pipelineRef = useRef<DitherPipeline | null>(null)
   const displayCanvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -93,6 +95,10 @@ export default function App() {
     }
     pipelineRef.current?.reset()
   }, [source?.kind, source?.url])
+
+  useEffect(() => {
+    if (source) setMobileTab('preview')
+  }, [source?.url])
 
   const onChange = useCallback((patch: Partial<ProcessSettings>) => {
     setSettings((s) => ({ ...s, ...patch }))
@@ -236,59 +242,72 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <header className="flex items-center gap-4 border-b border-line px-5 py-3">
-        <div className="flex items-center gap-2">
-          <div
-            className="grid h-6 w-6 grid-cols-3 grid-rows-3 gap-px"
-            aria-hidden
-          >
-            {Array.from({ length: 9 }, (_, i) => (
-              <span
-                key={i}
-                className={
-                  [0, 2, 4, 6, 8].includes(i) ? 'bg-accent' : 'bg-line'
-                }
-              />
-            ))}
+    <div className="flex h-[100dvh] flex-col overflow-hidden">
+      <header
+        className="shrink-0 border-b border-line px-3 py-2.5 sm:px-5 sm:py-3"
+        style={{ paddingTop: 'max(0.625rem, env(safe-area-inset-top))' }}
+      >
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex min-w-0 items-center gap-2">
+            <div
+              className="grid h-6 w-6 shrink-0 grid-cols-3 grid-rows-3 gap-px"
+              aria-hidden
+            >
+              {Array.from({ length: 9 }, (_, i) => (
+                <span
+                  key={i}
+                  className={
+                    [0, 2, 4, 6, 8].includes(i) ? 'bg-accent' : 'bg-line'
+                  }
+                />
+              ))}
+            </div>
+            <h1 className="truncate text-sm font-semibold tracking-tight">
+              {SITE.name}
+            </h1>
           </div>
-          <h1 className="text-sm font-semibold tracking-tight">{SITE.name}</h1>
-        </div>
-        <span className="hidden text-xs text-muted sm:inline">
-          Open source · image & video · ASCII + motion
-        </span>
-        <div className="ml-auto flex items-center gap-2">
-          {source && (
-            <>
-              <DropZone onFile={loadFile} compact />
-              <button
-                type="button"
-                onClick={clear}
-                className="rounded-md border border-line px-3 py-1.5 text-sm text-muted hover:border-muted hover:text-paper"
-              >
-                Clear
-              </button>
-            </>
-          )}
-          <a
-            href={SITE.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${SITE.name} on GitHub`}
-            title="Source on GitHub"
-            className="flex h-8 w-8 items-center justify-center rounded-md border border-line text-muted transition hover:border-muted hover:text-paper"
-          >
-            <GitHubIcon size={16} />
-          </a>
+          <span className="hidden text-xs text-muted md:inline">
+            Open source · image & video · ASCII + motion
+          </span>
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+            {source && (
+              <>
+                <DropZone onFile={loadFile} compact />
+                <button
+                  type="button"
+                  onClick={clear}
+                  className="rounded-md border border-line px-2.5 py-1.5 text-sm text-muted hover:border-muted hover:text-paper sm:px-3"
+                >
+                  <span className="hidden sm:inline">Clear</span>
+                  <span className="sm:hidden">×</span>
+                </button>
+              </>
+            )}
+            <a
+              href={SITE.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${SITE.name} on GitHub`}
+              title="Source on GitHub"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-line text-muted transition hover:border-muted hover:text-paper"
+            >
+              <GitHubIcon size={16} />
+            </a>
+          </div>
         </div>
       </header>
 
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[1fr_320px]">
-        <main className="min-h-0 p-4 lg:p-5">
+        <main
+          className={[
+            'min-h-0 p-3 sm:p-4 lg:p-5',
+            source && mobileTab === 'adjust' ? 'hidden lg:block' : '',
+          ].join(' ')}
+        >
           {!source ? (
             <DropZone onFile={loadFile} />
           ) : (
-            <div className="h-full overflow-hidden rounded-xl border border-line">
+            <div className="flex h-full min-h-[42dvh] flex-col overflow-hidden rounded-xl border border-line lg:min-h-0">
               <Preview
                 source={source}
                 settings={settings}
@@ -306,6 +325,12 @@ export default function App() {
         </main>
 
         <Controls
+          className={[
+            !source ? 'hidden lg:flex' : '',
+            source && mobileTab === 'preview' ? 'hidden lg:flex' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
           settings={settings}
           kind={source?.kind ?? null}
           hasAlpha={source?.kind === 'image' ? source.hasAlpha : false}
@@ -320,8 +345,22 @@ export default function App() {
         />
       </div>
 
+      {source && (
+        <MobileBottomBar
+          tab={mobileTab}
+          onTab={setMobileTab}
+          onExport={() => void onExport()}
+          exporting={exporting}
+          exportProgress={exportProgress}
+          bgRemoving={bgRemoving}
+          kind={source.kind}
+        />
+      )}
+
       {toast && (
-        <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full border border-line bg-panel-2 px-4 py-2 text-sm text-paper shadow-lg">
+        <div
+          className="pointer-events-none fixed left-1/2 z-50 -translate-x-1/2 rounded-full border border-line bg-panel-2 px-4 py-2 text-sm text-paper shadow-lg bottom-[calc(4.5rem+env(safe-area-inset-bottom))] lg:bottom-6"
+        >
           {toast}
         </div>
       )}

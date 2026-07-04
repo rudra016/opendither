@@ -21,6 +21,7 @@ html,
 body,
 #root {
   height: 100%;
+  height: 100dvh;
 }
 
 body {
@@ -30,6 +31,24 @@ body {
   color: var(--color-paper);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+@media (max-width: 1023px) {
+  input[type="range"] {
+    height: 6px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 input[type="range"] {

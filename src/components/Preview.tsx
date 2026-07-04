@@ -186,7 +186,7 @@ export function Preview({
         />
       )}
 
-      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_center,#1a1a17_0%,#0a0a0a_70%)] p-6">
+      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_center,#1a1a17_0%,#0a0a0a_70%)] p-3 sm:p-6">
         <canvas
           ref={displayCanvasRef}
           className={`max-h-full max-w-full rounded-sm ${ready ? '' : 'invisible'}`}
@@ -213,7 +213,7 @@ export function Preview({
       </div>
 
       {source.kind === 'video' && (
-        <div className="flex items-center gap-3 border-t border-line bg-panel px-4 py-2">
+        <div className="flex items-center gap-2 border-t border-line bg-panel px-3 py-2 sm:gap-3 sm:px-4">
           <button
             type="button"
             onClick={() => void togglePlay()}
@@ -222,21 +222,21 @@ export function Preview({
           >
             {playing ? <Pause size={14} /> : <Play size={14} />}
           </button>
-          <span className="truncate font-mono text-xs text-muted">
+          <span className="min-w-0 truncate font-mono text-[11px] text-muted sm:text-xs">
             {source.name}
           </span>
-          <span className="ml-auto font-mono text-[11px] text-muted">
+          <span className="ml-auto shrink-0 font-mono text-[10px] text-muted sm:text-[11px]">
             {source.width}×{source.height}
           </span>
         </div>
       )}
 
       {source.kind === 'image' && (
-        <div className="flex items-center gap-3 border-t border-line bg-panel px-4 py-2">
-          <span className="truncate font-mono text-xs text-muted">
+        <div className="flex items-center gap-2 border-t border-line bg-panel px-3 py-2 sm:gap-3 sm:px-4">
+          <span className="min-w-0 truncate font-mono text-[11px] text-muted sm:text-xs">
             {source.name}
           </span>
-          <span className="ml-auto font-mono text-[11px] text-muted">
+          <span className="ml-auto shrink-0 font-mono text-[10px] text-muted sm:text-[11px]">
             {source.width}×{source.height}
           </span>
         </div>
