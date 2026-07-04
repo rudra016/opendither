@@ -23,7 +23,7 @@ export const SITE = {
     '1-bit',
     'palette quantization',
   ],
-  github: 'https://github.com/open-dither/open-dither',
+  github: 'https://github.com/rudra016/opendither',
   locale: 'en_US',
   themeColor: '#0a0a0a',
 } as const
