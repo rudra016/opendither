@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import { Controls } from './components/Controls'
 import { DropZone } from './components/DropZone'
 import { ImageCropper } from './components/ImageCropper'
@@ -376,6 +377,8 @@ export default function App() {
           onCancel={cancelCrop}
         />
       )}
+
+      <Analytics />
     </div>
   )
 }
