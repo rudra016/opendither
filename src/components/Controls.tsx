@@ -12,11 +12,14 @@ import {
 interface Props {
   settings: ProcessSettings
   kind: MediaKind | null
+  hasAlpha?: boolean
   onChange: (patch: Partial<ProcessSettings>) => void
   exportQuality: ExportQuality
   onExportQualityChange: (q: ExportQuality) => void
   onExport: () => void
+  onRemoveBackground?: () => void
   exporting: boolean
+  bgRemoving?: boolean
   exportProgress: number | null
 }
 
@@ -96,11 +99,14 @@ function Segmented<T extends string>({
 export function Controls({
   settings,
   kind,
+  hasAlpha = false,
   onChange,
   exportQuality,
   onExportQualityChange,
   onExport,
+  onRemoveBackground,
   exporting,
+  bgRemoving = false,
   exportProgress,
 }: Props) {
   const [showMoreAlgos, setShowMoreAlgos] = useState(false)
@@ -240,6 +246,28 @@ export function Controls({
           })}
         </div>
       </div>
+
+      {kind === 'image' && onRemoveBackground && (
+        <div>
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">
+            Image
+          </h2>
+          <button
+            type="button"
+            disabled={bgRemoving || exporting}
+            onClick={onRemoveBackground}
+            className="mt-2 w-full rounded-md border border-line bg-panel-2 px-3 py-2.5 text-left text-sm transition enabled:hover:border-muted disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <span className="font-medium text-paper">
+              {hasAlpha ? 'Remove background again' : 'Remove background'}
+            </span>
+            <span className="mt-0.5 block text-[11px] leading-relaxed text-muted">
+              Exports a raster, calls remove.bg, then flattens onto white for
+              clean dithering. Requires API key in .env.
+            </span>
+          </button>
+        </div>
+      )}
 
       <div className="space-y-4">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">
@@ -394,7 +422,7 @@ export function Controls({
         </div>
         <button
           type="button"
-          disabled={!kind || exporting}
+          disabled={!kind || exporting || bgRemoving}
           onClick={onExport}
           className="w-full rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-ink transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
         >

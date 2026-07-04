@@ -10,6 +10,11 @@ import {
   exportProcessedVideo,
 } from './lib/export'
 import { DitherPipeline, fitExportSize } from './lib/pipeline'
+import {
+  formatBgProgress,
+  removeBackgroundFromImage,
+  type BgRemovalProgress,
+} from './lib/removeBackground'
 import { SITE } from './lib/site'
 import {
   DEFAULT_EXPORT_QUALITY,
@@ -43,6 +48,7 @@ export default function App() {
     applyCrop,
     skipCrop,
     cancelCrop,
+    replaceImage,
     clear,
   } = useMediaSource()
   const [settings, setSettings] = useState<ProcessSettings>(() => ({
@@ -53,6 +59,9 @@ export default function App() {
   )
   const [exporting, setExporting] = useState(false)
   const [exportProgress, setExportProgress] = useState<number | null>(null)
+  const [bgRemoving, setBgRemoving] = useState(false)
+  const [bgRemoveProgress, setBgRemoveProgress] =
+    useState<BgRemovalProgress | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
   const pipelineRef = useRef<DitherPipeline | null>(null)
@@ -92,6 +101,31 @@ export default function App() {
   const showToast = (msg: string) => {
     setToast(msg)
     window.setTimeout(() => setToast(null), 2800)
+  }
+
+  const onRemoveBackground = async () => {
+    if (!source || source.kind !== 'image' || bgRemoving || exporting) return
+    setBgRemoving(true)
+    setBgRemoveProgress(null)
+    pipelineRef.current?.reset()
+
+    try {
+      const blob = await removeBackgroundFromImage(
+        source.url,
+        setBgRemoveProgress,
+      )
+      const ok = await replaceImage(blob, {
+        nameSuffix: '-nobg',
+        hasAlpha: false,
+      })
+      if (ok) showToast('Background removed')
+    } catch (e) {
+      console.error(e)
+      showToast('Background removal failed')
+    } finally {
+      setBgRemoving(false)
+      setBgRemoveProgress(null)
+    }
   }
 
   const onExport = async () => {
@@ -261,6 +295,8 @@ export default function App() {
                 pipelineRef={pipelineRef}
                 displayCanvasRef={displayCanvasRef}
                 exporting={exporting}
+                bgRemoving={bgRemoving}
+                bgRemoveLabel={formatBgProgress(bgRemoveProgress)}
               />
             </div>
           )}
@@ -272,11 +308,14 @@ export default function App() {
         <Controls
           settings={settings}
           kind={source?.kind ?? null}
+          hasAlpha={source?.kind === 'image' ? source.hasAlpha : false}
           onChange={onChange}
           exportQuality={exportQuality}
           onExportQualityChange={setExportQuality}
           onExport={() => void onExport()}
+          onRemoveBackground={() => void onRemoveBackground()}
           exporting={exporting}
+          bgRemoving={bgRemoving}
           exportProgress={exportProgress}
         />
       </div>

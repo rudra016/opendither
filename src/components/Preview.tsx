@@ -17,6 +17,8 @@ interface Props {
   pipelineRef: RefObject<DitherPipeline | null>
   displayCanvasRef: RefObject<HTMLCanvasElement | null>
   exporting?: boolean
+  bgRemoving?: boolean
+  bgRemoveLabel?: string
 }
 
 const MAX_PROCESS_EDGE = 960
@@ -27,6 +29,8 @@ export function Preview({
   pipelineRef,
   displayCanvasRef,
   exporting = false,
+  bgRemoving = false,
+  bgRemoveLabel,
 }: Props) {
   const imgRef = useRef<HTMLImageElement | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -196,6 +200,14 @@ export function Preview({
         {exporting && (
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader />
+          </div>
+        )}
+        {bgRemoving && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-ink/70">
+            <Loader />
+            {bgRemoveLabel && (
+              <p className="font-mono text-xs text-muted">{bgRemoveLabel}</p>
+            )}
           </div>
         )}
       </div>

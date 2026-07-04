@@ -8,6 +8,8 @@ export interface MediaSource {
   name: string
   width: number
   height: number
+  /** True when PNG has transparency (e.g. after background removal). */
+  hasAlpha?: boolean
 }
 
 export interface PendingImage {
@@ -170,6 +172,37 @@ export function useMediaSource() {
     setError(null)
   }, [revokePending])
 
+  const replaceImage = useCallback(
+    async (blob: Blob, opts: { nameSuffix?: string; hasAlpha?: boolean } = {}) => {
+      if (!source || source.kind !== 'image') return false
+      setError(null)
+
+      const previewUrl = URL.createObjectURL(blob)
+      try {
+        const img = await loadImage(previewUrl)
+        URL.revokeObjectURL(previewUrl)
+
+        const url = URL.createObjectURL(blob)
+        const base = source.name.replace(/\.[^.]+$/, '')
+        const suffix = opts.nameSuffix ?? '-nobg'
+        commitSource({
+          kind: 'image',
+          url,
+          name: `${base}${suffix}.png`,
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+          hasAlpha: opts.hasAlpha ?? false,
+        })
+        return true
+      } catch {
+        URL.revokeObjectURL(previewUrl)
+        setError('Could not apply that image.')
+        return false
+      }
+    },
+    [source, commitSource],
+  )
+
   return {
     source,
     pendingImage,
@@ -178,6 +211,7 @@ export function useMediaSource() {
     applyCrop,
     skipCrop,
     cancelCrop,
+    replaceImage,
     clear,
   }
 }

@@ -42,7 +42,7 @@ export class DitherPipeline {
     srcW: number,
     srcH: number,
     settings: ProcessSettings,
-    opts: { isVideo?: boolean } = {},
+    opts: { isVideo?: boolean; hasAlpha?: boolean } = {},
   ): HTMLCanvasElement {
     const scale = Math.min(1, Math.max(0.1, settings.scale))
     const w = Math.max(1, Math.round(srcW * scale))
