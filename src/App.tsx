@@ -199,7 +199,6 @@ export default function App() {
         const blob = await exportProcessedVideo({
           canvas: exportCanvas,
           video,
-          fps: 24,
           videoBitsPerSecond: bitrate,
           signal: controller.signal,
           onProgress: setExportProgress,
